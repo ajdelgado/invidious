@@ -181,7 +181,11 @@ we're going to need to do it here in order to allow for translations.
                 <% end %>
             </p>
             <% if video.license %>
-                <p id="license"><%= translate(locale, "License: ") %><%= video.license %></p>
+                <% if video.license.empty? %>
+                    <p id="license"><%= translate(locale, "License: ") %><%= translate(locale, "Standard YouTube license") %></p>
+                <% else %>
+                    <p id="license"><%= translate(locale, "License: ") %><%= video.license %></p>
+                <% end %>
             <% end %>
             <p id="family_friendly"><%= translate(locale, "Family friendly? ") %><%= translate_bool(locale, video.is_family_friendly) %></p>
             <p id="wilson" style="display: none; visibility: hidden;"></p>
@@ -204,7 +208,7 @@ we're going to need to do it here in order to allow for translations.
             <a href="/channel/<%= video.ucid %>" style="display:block;width:fit-content;width:-moz-fit-content">
                 <div class="channel-profile">
                     <% if !video.author_thumbnail.empty? %>
-                        <img src="/ggpht<%= URI.parse(video.author_thumbnail).request_target %>">
+                        <img src="/ggpht<%= URI.parse(video.author_thumbnail).request_target %>" alt="" />
                     <% end %>
                     <span id="channel-name"><%= author %><% if !video.author_verified.nil? && video.author_verified %>&nbsp;<i class="icon ion ion-md-checkmark-circle"></i><% end %></span>
                 </div>
@@ -248,9 +252,9 @@ we're going to need to do it here in order to allow for translations.
                 <div id="music-description-box">
                     <% video.music.each do |music| %>
                         <div class="music-item">
-                            <p id="music-artist"><%= translate(locale, "Artist: ") %><%= music.artist %></p>
-                            <p id="music-album"><%= translate(locale, "Album: ") %><%= music.album %></p>
-                            <p id="music-license"><%= translate(locale, "License: ") %><%= music.license %></p>
+                            <p class="music-song"><%= translate(locale, "Song: ") %><%= music.song %></p>
+                            <p class="music-artist"><%= translate(locale, "Artist: ") %><%= music.artist %></p>
+                            <p class="music-album"><%= translate(locale, "Album: ") %><%= music.album %></p>
                         </div>
                     <% end %>
                 </div>
@@ -294,7 +298,7 @@ we're going to need to do it here in order to allow for translations.
                             <a href="/watch?v=<%= rv["id"] %>&listen=<%= params.listen %>">
                                 <% if !env.get("preferences").as(Preferences).thin_mode %>
                                     <div class="thumbnail">
-                                        <img loading="lazy" class="thumbnail" src="/vi/<%= rv["id"] %>/mqdefault.jpg">
+                                        <img loading="lazy" class="thumbnail" src="/vi/<%= rv["id"] %>/mqdefault.jpg" alt="" />
                                         <p class="length"><%= recode_length_seconds(rv["length_seconds"]?.try &.to_i? || 0) %></p>
                                     </div>
                                 <% end %>
