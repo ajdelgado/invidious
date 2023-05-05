@@ -2,10 +2,9 @@
 
 wdir=/srv/invidious
 
-mv "${wdir}/backup/db_backup.tar.gz" "${wdir}/backup/db_backup.tar.1.gz"
-docker stop invidious_invidious-db_1
-docker run --rm --volumes-from invidious_invidious-db_1 -v "${wdir}/backup":/backup ubuntu tar caf /backup/db_backup.tar.gz /var/lib/postgresql/data
-docker start invidious_invidious-db_1
+cur_date=$(date +%d.%m.%Y.%H.%M.%S)
+docker exec -t invidious_invidious-db_1 pg_dumpall -c -U kemal > "backup/dump_${cur_date}.sql"
+gzip "backup/dump_${cur_date}.sql"
 
 mv "${wdir}/backup/etc_backup.tar.gz" "${wdir}/backup/etc_backup.tar.1.gz"
 tar caf "${wdir}/backup/etc_backup.tar.gz" /etc/invidious_container
