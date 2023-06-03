@@ -9,3 +9,5 @@
 /config/config.yml
 backup/*
 *~
+*.local
+config/sql/db_backup.tar.gz
