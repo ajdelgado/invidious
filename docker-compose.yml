@@ -4,17 +4,41 @@
 #
 services:
   invidious:
-    depends_on: [invidious-db]
     deploy:
       resources:
         limits: {cpus: '2', memory: 256M}
         reservations: {cpus: '0.5', memory: 120M}
-    healthcheck: {interval: 30s, retries: 2, test: 'wget -nv --tries=1 --spider http://127.0.0.1:3300/api/v1/comments/jNQXAC9IVRw
-        || exit 1', timeout: 5s}
     image: quay.io/invidious/invidious:latest
     ports: ['3300:3300']
     restart: unless-stopped
     volumes: ['/etc/invidious_container:/invidious/config/']
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      # Please read the following file for a comprehensive list of all available
+      # configuration options and their associated syntax:
+      # https://github.com/iv-org/invidious/blob/master/config/config.example.yml
+      INVIDIOUS_CONFIG: |
+        db:
+          dbname: invidious
+          user: kemal
+          password: kemal
+          host: invidious-db
+          port: 5432
+        check_tables: true
+        # external_port:
+        # domain:
+        # https_only: false
+        # statistics_enabled: false
+        hmac_key: "CHANGE_ME!!"
+    healthcheck:
+      test: wget -nv --tries=1 --spider http://127.0.0.1:3000/api/v1/comments/jNQXAC9IVRw || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 2
+    depends_on:
+      - invidious-db
+
   invidious-db:
     deploy:
       resources:
